@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BBPPiCalculator
+namespace BBP
 {
     /// <summary>       
     /// Used to generate the [n]th digit of Pi in base16 (hex). This algorithm creates
@@ -40,7 +40,7 @@ namespace BBPPiCalculator
     /// 
     /// </summary>
 
-    public class BBPCalculator
+    public class PiDigit
     {
         #region Vars
         private const int NumHexDigits = 16;                        
@@ -52,7 +52,7 @@ namespace BBPPiCalculator
         /// <summary>
         /// Constructor
         /// </summary>
-        public BBPCalculator()
+        public PiDigit()
         {
             this.initializeTwoPowers();
         }
@@ -176,8 +176,8 @@ namespace BBPPiCalculator
             pow1 = p;
             result = 1d;
 
-            // Perform binary exponentiation algorithm modulo m.            
-            Parallel.For(1, i+1, j =>
+            // Perform binary exponentiation algorithm modulo m.                 
+            for (int j = 1; j <= i; j++)
             {
                 if (pow1 >= pow2)
                 {
@@ -191,7 +191,7 @@ namespace BBPPiCalculator
                     result = result * result;
                     result = result - (int)(result / m) * m;
                 }
-            });
+            }
 
             return result;
         }
