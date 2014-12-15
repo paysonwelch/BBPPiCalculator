@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using BBP;
 
 /******************************************************************************
  * BBP Pi Calculator
@@ -69,15 +70,14 @@ namespace BBPPiCalculator
             int digitStart = 0;                     // start digit
             int digitEnd = 100;                    // end digit
             #endregion
-                    
+
             for (int i = digitStart; i < digitEnd/10; i++)  // hex slices are 10 chars
             {
-                BBPCalculator bc = new BBPCalculator();       
-                string hd = bc.Calc(i*10);
+                PiDigit pd = new PiDigit();       
+                string hd = pd.Calc(i*10);
                 Console.Write(hd + " " + (i) + "\r\n");
             }
-
-            Console.WriteLine("");         
+           
             return;
         }     
     }
