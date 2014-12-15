@@ -40,7 +40,7 @@ namespace BBP
     /// 
     /// </summary>
 
-    public class PiDigit
+    public class PiDigit : IBBPCalculator
     {
         #region Vars
         private const int NumHexDigits = 16;                        
@@ -62,7 +62,7 @@ namespace BBP
         /// </summary>
         /// <param name="n">The digit of Pi which you wish to solve for.</param>
         /// <returns>Returns ten hexidecimal values of Pi from the offset (n).</returns>
-        public string Calc(int n)
+        public BBPResult Calc(int n)
         {
             double pid, s1, s2, s3, s4;     // summations           
             string hexDigits;               // the hexidecimal digits
@@ -75,8 +75,9 @@ namespace BBP
             
             pid = 4d * s1 - 2d * s2 - s3 - s4;          // transform the summations
             pid = pid - (int)pid + 1d;                  // create the fraction
-            hexDigits = HexString(pid, NumHexDigits);   // convert the fraction to the hex digit slice
-            return hexDigits.Substring(0, 10);          // return 10 hex digits starting at [n] position
+            hexDigits = HexString(pid, NumHexDigits);   // convert the fraction to the hex digit slice      
+
+            return new BBPResult() { Digit = n, HexDigits = hexDigits.Substring(0, 10) };
         }
 
         /// <summary>

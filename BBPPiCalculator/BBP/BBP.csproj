@@ -39,7 +39,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="IBBP.cs" />
+    <Compile Include="BBPResult.cs" />
+    <Compile Include="IBBPCalculator.cs" />
     <Compile Include="PiDigit.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

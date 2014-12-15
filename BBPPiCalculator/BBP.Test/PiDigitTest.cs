@@ -19,8 +19,8 @@ namespace BBP.Test
         public void PiDigits_0()
         {
             PiDigit pd = new PiDigit();
-            string hexDigits = pd.Calc(0);
-            Assert.AreEqual(hexDigits, "243F6A8885");
+            BBPResult result = pd.Calc(0);
+            Assert.AreEqual(result.HexDigits, "243F6A8885");
         }
 
         /// <summary>
@@ -30,8 +30,8 @@ namespace BBP.Test
         public void PiDigits_10()
         {
             PiDigit pd = new PiDigit();
-            string hexDigits = pd.Calc(10);
-            Assert.AreEqual(hexDigits, "A308D31319");
+            BBPResult result = pd.Calc(10);
+            Assert.AreEqual(result.HexDigits, "A308D31319");
         }
 
         /// <summary>
@@ -41,8 +41,8 @@ namespace BBP.Test
         public void PiDigits_20()
         {
             PiDigit pd = new PiDigit();
-            string hexDigits = pd.Calc(20);
-            Assert.AreEqual(hexDigits, "8A2E037073");
+            BBPResult result = pd.Calc(20);
+            Assert.AreEqual(result.HexDigits, "8A2E037073");
         }
 
         /// <summary>
@@ -52,8 +52,8 @@ namespace BBP.Test
         public void PiDigits_30()
         {
             PiDigit pd = new PiDigit();
-            string hexDigits = pd.Calc(30);
-            Assert.AreEqual(hexDigits, "44A4093822");
+            BBPResult result = pd.Calc(30);
+            Assert.AreEqual(result.HexDigits, "44A4093822");
         }
 
         /// <summary>
@@ -63,8 +63,8 @@ namespace BBP.Test
         public void PiDigits_40()
         {
             PiDigit pd = new PiDigit();
-            string hexDigits = pd.Calc(40);
-            Assert.AreEqual(hexDigits, "299F31D008");
+            BBPResult result = pd.Calc(40);
+            Assert.AreEqual(result.HexDigits, "299F31D008");
         }
 
         /// <summary>
@@ -74,8 +74,8 @@ namespace BBP.Test
         public void PiDigits_50()
         {
             PiDigit pd = new PiDigit();
-            string hexDigits = pd.Calc(50);
-            Assert.AreEqual(hexDigits, "2EFA98EC4E");
+            BBPResult result = pd.Calc(50);
+            Assert.AreEqual(result.HexDigits, "2EFA98EC4E");
         }
 
         /// <summary>
@@ -85,8 +85,8 @@ namespace BBP.Test
         public void PiDigits_60()
         {
             PiDigit pd = new PiDigit();
-            string hexDigits = pd.Calc(60);
-            Assert.AreEqual(hexDigits, "6C89452821");
+            BBPResult result = pd.Calc(60);
+            Assert.AreEqual(result.HexDigits, "6C89452821");
         }
 
         /// <summary>
@@ -96,8 +96,8 @@ namespace BBP.Test
         public void PiDigits_70()
         {
             PiDigit pd = new PiDigit();
-            string hexDigits = pd.Calc(70);
-            Assert.AreEqual(hexDigits, "E638D01377");
+            BBPResult result = pd.Calc(70);
+            Assert.AreEqual(result.HexDigits, "E638D01377");
         }
 
         /// <summary>
@@ -107,8 +107,8 @@ namespace BBP.Test
         public void PiDigits_80()
         {
             PiDigit pd = new PiDigit();
-            string hexDigits = pd.Calc(80);
-            Assert.AreEqual(hexDigits, "BE5466CF34");
+            BBPResult result = pd.Calc(80);
+            Assert.AreEqual(result.HexDigits, "BE5466CF34");
         }
 
         /// <summary>
@@ -118,8 +118,8 @@ namespace BBP.Test
         public void PiDigits_90()
         {
             PiDigit pd = new PiDigit();
-            string hexDigits = pd.Calc(90);
-            Assert.AreEqual(hexDigits, "E90C6CC0AC");
+            BBPResult result = pd.Calc(90);
+            Assert.AreEqual(result.HexDigits, "E90C6CC0AC");
         }
     }
 }

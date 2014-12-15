@@ -74,8 +74,8 @@ namespace BBPPiCalculator
             for (int i = digitStart; i < digitEnd/10; i++)  // hex slices are 10 chars
             {
                 PiDigit pd = new PiDigit();       
-                string hd = pd.Calc(i*10);
-                Console.Write(hd + " " + (i) + "\r\n");
+                BBPResult result = pd.Calc(i*10);
+                Console.Write(result.HexDigits + " " + (i) + "\r\n");
             }
            
             return;
