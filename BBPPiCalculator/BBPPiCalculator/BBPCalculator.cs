@@ -14,17 +14,20 @@ namespace BBPPiCalculator
     /// The formulaic code was borrowed from: 
     /// http://latkin.org/blog/2012/11/03/the-bailey-borwein-plouffe-algorithm-in-c-and-f/
     /// 
+    /// And the original formula by the author above was borrowed from Bailey (of BBP): 
+    /// http://www.experimentalmath.info/bbp-codes/piqpr8.c
+    /// 
     /// It conforms to this mathematical formula: 
     /// http://upload.wikimedia.org/math/d/5/6/d56287522ec15b6d47c9402f24a9ba89.png
     /// 
-    /// A description of the algorithm can be found in this unrelated vut very 
-    /// informative whitepaper:
+    /// A description of the algorithm can be found in this very informative whitepaper (Bailey):
     /// http://crd-legacy.lbl.gov/~dhbailey/dhbpapers/bbp-alg.pdf
     /// 
     /// Modifications:
     ///     - Converted the functional logic to a standardized class structure.
     ///     - Added more in depth commentary
-    ///     -
+    ///     - Added parallelization for certain tasks
+    ///     
     /// Verified the hexidecimal output by cross referencing this whitepaper:
     /// http://crd-legacy.lbl.gov/~dhbailey/dhbpapers/bbp-alg.pdf
     /// 
@@ -34,7 +37,7 @@ namespace BBPPiCalculator
     /// Hex positions for debugging
     /// 0:          243F6A8885A308D313198A2
     /// 1,000,000:  6C65E52CB459350050E4BB1
-    ///    
+    /// 
     /// </summary>
 
     public class BBPCalculator
@@ -55,7 +58,7 @@ namespace BBPPiCalculator
         }
 
         /// <summary>
-        /// Calculates the [n]th hexidecimal digit of {i.
+        /// Calculates the [n]th hexidecimal digit of Pi.
         /// </summary>
         /// <param name="n">The digit of Pi which you wish to solve for.</param>
         /// <returns>Returns ten hexidecimal values of Pi from the offset (n).</returns>
@@ -81,31 +84,31 @@ namespace BBPPiCalculator
         /// </summary>
         private void initializeTwoPowers()
         {
-            this.twoPowers[0] = 1d;
-            for (int i = 1; i < NumTwoPowers; i++)
+            this.twoPowers[0] = 1d;         
+            Parallel.For(1, NumTwoPowers, i =>           
             {
                 this.twoPowers[i] = 2d * this.twoPowers[i - 1];
-            }
+            });
         }
 
         /// <summary>
-        /// Converts the fraction to a hexidecimal string.
+        /// Converts the fraction to a hexidecimal string. Multiply by 16
+        /// and take the whole number on each round and then convert it to 
+        /// it's hex equivalent.
         /// </summary>
         /// <param name="x">The fraction of the summations.</param>
         /// <param name="numDigits">Number of digits to render to hex.</param>
         /// <returns>Returns a hex string of length numDigits</returns>
-        private static string HexString(double x, int numDigits)
+        private string HexString(double x, int numDigits)
         {
             string hexChars = "0123456789ABCDEF";
             StringBuilder sb = new StringBuilder(numDigits);
             double y = Math.Abs(x);
-
-            for (int i = 0; i < numDigits; i++)
+            for (int i = 0; i < numDigits; i++)            
             {
                 y = 16d * (y - Math.Floor(y));
                 sb.Append(hexChars[(int)y]);
             }
-
             return sb.ToString();
         }
                
@@ -120,8 +123,8 @@ namespace BBPPiCalculator
         {
             double denom, pow, sum = 0d, term;
 
-            //  Sum the series up to n.
-            for (int k = 0; k < n; k++)
+            // Sum the series up to n.              
+            for(int k=0; k<n;k++)
             {
                 denom = 8 * k + m;
                 pow = n - k;
@@ -162,7 +165,7 @@ namespace BBPPiCalculator
             }
 
             // Find the greatest power of two less than or equal to p.
-            for (i = 0; i < NumTwoPowers; i++)
+            for (i = 0; i < NumTwoPowers; i++)                    
             {
                 if (twoPowers[i] > p)
                 {
@@ -173,8 +176,8 @@ namespace BBPPiCalculator
             pow1 = p;
             result = 1d;
 
-            // Perform binary exponentiation algorithm modulo m.
-            for (int j = 1; j <= i; j++)
+            // Perform binary exponentiation algorithm modulo m.            
+            Parallel.For(1, i+1, j =>
             {
                 if (pow1 >= pow2)
                 {
@@ -188,7 +191,7 @@ namespace BBPPiCalculator
                     result = result * result;
                     result = result - (int)(result / m) * m;
                 }
-            }
+            });
 
             return result;
         }

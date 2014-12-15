@@ -64,10 +64,20 @@ namespace BBPPiCalculator
     {
         static void Main(string[] args)
         {
-            BBPCalculator bc = new BBPCalculator();
-            string hd = bc.Calc(0);
-            Console.WriteLine(hd);
+            #region Vars
+            DateTime startTime = DateTime.UtcNow;   // track the start time          
+            int digitStart = 0;                     // start digit
+            int digitEnd = 100;                    // end digit
+            #endregion
+                    
+            for (int i = digitStart; i < digitEnd/10; i++)  // hex slices are 10 chars
+            {
+                BBPCalculator bc = new BBPCalculator();       
+                string hd = bc.Calc(i*10);
+                Console.Write(hd + " " + (i) + "\r\n");
+            }
 
+            Console.WriteLine("");         
             return;
         }     
     }
