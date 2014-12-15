@@ -57,6 +57,9 @@ using BBP;
  * BBP Algorith for Pi, The (Whitepaper) http://crd-legacy.lbl.gov/~dhbailey/dhbpapers/bbp-alg.pdf
  * Pi in hexidecimal: http://calccrypto.wikidot.com/math:pi-hex
  * 
+ * Parallelization, Test system: 2x Xeon E5520 CPUs, 24GB RAM
+ * - Un-Parallelized runtime for 1000 slices (10000 digits) is 11.5 seconds.
+ * - Parallelized runtime, 1.25 seconds for 1000 slices
  * ***************************************************************************/
 
 namespace BBPPiCalculator
@@ -66,18 +69,34 @@ namespace BBPPiCalculator
         static void Main(string[] args)
         {
             #region Vars
-            DateTime startTime = DateTime.UtcNow;   // track the start time          
-            int digitStart = 0;                     // start digit
-            int digitEnd = 100;                    // end digit
+            DateTime startTime = DateTime.UtcNow;               // track the start time          
+            int digitStart = 0;                                 // start digit
+            int digitEnd = 10000;                                 // end digit
+            List<BBPResult> PiDigits = new List<BBPResult>();   // collection of results
             #endregion
 
-            for (int i = digitStart; i < digitEnd/10; i++)  // hex slices are 10 chars
+            #if !PARALLELIZE 
+            for (int i = digitStart; i < digitEnd/10; i++)
+            #endif
+            #if PARALLELIZE
+            Parallel.For(digitStart, digitEnd / 10, i =>
+            #endif
             {
-                PiDigit pd = new PiDigit();       
-                BBPResult result = pd.Calc(i*10);
+                PiDigit pd = new PiDigit();
+                BBPResult result = pd.Calc(i * 10);
+                PiDigits.Add(result);
                 Console.Write(result.HexDigits + " " + (i) + "\r\n");
+            #if !PARALLELIZE
             }
-           
+            #endif
+            #if PARALLELIZE
+            });
+            #endif
+                        
+            // Display some statistics 
+            TimeSpan span = DateTime.UtcNow - startTime;
+            Console.WriteLine("\r\n\r\nTask finished in {0} seconds.", span.TotalSeconds);
+
             return;
         }     
     }
