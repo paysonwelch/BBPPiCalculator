@@ -25,12 +25,12 @@ using BBP;
  * however and other anonymizing features of currencies the BBP-Pi POW system
  * would not be enough in itself to create a highly successful crypto currency.
  * 
- * A BBP-Pi POW currency would be more of a novelty of interest to reserachers
+ * A BBP-Pi POW currency would be more of a novelty of interest to researchers
  * mostly. There is also PrimeCoin which uses a POW system for hunting chains
  * of prime numbers. So although this is an interesting idea it needs more
  * thought before simply creating a POW based on BBP.
  * 
- * This applicaiton has been structured in such a way that it could easily be
+ * This application has been structured in such a way that it could easily be
  * modified for grid computing. This application currently will not focus on 
  * grid payload distribution, but will focus on breaking work items
  * into small specific units which can be easily inserted into a grid pipeline
@@ -54,7 +54,7 @@ using BBP;
  * https://gmplib.org/pi-with-gmp.html
  * 
  * References: 
- * BBP Algorith for Pi, The (Whitepaper) http://crd-legacy.lbl.gov/~dhbailey/dhbpapers/bbp-alg.pdf
+ * BBP Algorithm for Pi, The (Whitepaper) http://crd-legacy.lbl.gov/~dhbailey/dhbpapers/bbp-alg.pdf
  * Pi in hexidecimal: http://calccrypto.wikidot.com/math:pi-hex
  * 
  * Parallelization, Test system: 2x Xeon E5520 CPUs, 24GB RAM
@@ -96,9 +96,9 @@ namespace BBPPiCalculator
             });
             #endif
                         
-            // sort the results - if parallization is enabled the results are out of order
+            // sort the results - if parallelization is enabled the results are out of order
             // if these results were to be stored in an eventually consistent database such as MongoDB
-            // then we woudln't need to sort it in the application.
+            // then we wouldn't need to sort it in the application.
             PiDigits.Sort(new BBPResultComparer());
             foreach (BBPResult br in PiDigits)
             {
