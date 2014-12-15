@@ -102,7 +102,7 @@ namespace BBPPiCalculator
             PiDigits.Sort(new BBPResultComparer());
             foreach (BBPResult br in PiDigits)
             {
-                Console.Write(br.HexDigits + " " + (br.Digit) + "\r\n");
+                 Console.Write("{0} {1}\r\n", br.HexDigits, br.Digit);
             }
 
             // Display some statistics 
