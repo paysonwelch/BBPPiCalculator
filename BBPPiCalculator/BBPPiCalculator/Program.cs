@@ -12,12 +12,12 @@ using System.Threading.Tasks;
  * Abstract
  * --------------------------
  * This application is a proof of concept to demonstrate the capability of the 
- * Bailey–Borwein–Plouffe formula which can be used to solve for [n]th decimal
- * in the pi series.
+ * Bailey–Borwein–Plouffe formula which can be used to solve for [n]th binary 
+ * digit of pi using base 16 math.
  * http://en.wikipedia.org/wiki/Bailey%E2%80%93Borwein%E2%80%93Plouffe_formula
  * 
  * Executive Summary
- * --------------------------
+ * --------------------------------------------------------
  * Originally I was considering using the BBP formula to create a new Proof of
  * Work (POW) system for crypto currencies. With the advent of Proof of Stake 
  * however and other anonymizing features of currencies the BBP-Pi POW system
@@ -35,17 +35,20 @@ using System.Threading.Tasks;
  * http://en.wikipedia.org/wiki/Primecoin
  *  
  * Bailey–Borwein–Plouffe 
- * --------------------------
+ * --------------------------------------------------------
  * The BBP formula was accidentally discovered in 1995 by researchers. It is a 
  * spigot algorithm which can be used to calculate any digit of Pi.
  * 
- * Compatibility
- * --------------------------
+ * Compatibility and Crypto Currency Considerations
+ * --------------------------------------------------------
  * This proof of concept will not take into account large numbers. As the 
  * dataset grows the max number we wil be able to use in the calculations is
  * 18,446,744,073,709,551,615 which is the value of an unsigned int64. For 
  * crypto currencies it would be possible to use the GNU bignum library.
  * 
+ * The GMP library has interesting number generators which could also be 
+ * introduced for POW systems.
+ * https://gmplib.org/pi-with-gmp.html
  * ***************************************************************************/
 
 namespace BBPPiCalculator
