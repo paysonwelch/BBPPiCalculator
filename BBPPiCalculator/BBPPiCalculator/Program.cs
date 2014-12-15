@@ -69,23 +69,23 @@ namespace BBPPiCalculator
         static void Main(string[] args)
         {
             #region Vars
-            DateTime startTime = DateTime.UtcNow;               // track the start time          
-            int digitStart = 0;                                 // start digit
+            DateTime startTime = DateTime.UtcNow;                 // track the start time          
+            int digitStart = 0;                                   // start digit
             int digitEnd = 10000;                                 // end digit
-            List<BBPResult> PiDigits = new List<BBPResult>();   // collection of results
+            List<BBPResult> PiDigits = new List<BBPResult>();     // collection of results
             #endregion
 
-            #if !PARALLELIZE 
-            for (int i = digitStart; i < digitEnd/10; i++)
+            #if !PARALLELIZE                                      // parallelization is disabled
+            for (int i = digitStart; i < digitEnd/10; i++)        // to turn on set the PARALLELIZE conditional compilation symbol
             #endif
-            #if PARALLELIZE
+            #if PARALLELIZE                                       // parallelization is turned on
             Parallel.For(digitStart, digitEnd / 10, i =>
             #endif
             {
-                PiDigit pd = new PiDigit();
-                BBPResult result = pd.Calc(i * 10);
-                PiDigits.Add(result);
-                Console.Write(result.HexDigits + " " + (i) + "\r\n");
+                PiDigit pd = new PiDigit();                       // generate the next slice of 10 
+                BBPResult result = pd.Calc(i * 10);               // store the result so we can sort it later (eventually consistent)                              
+                PiDigits.Add(result);                             // the list is used in case we are using parallelization which will process slices out of order                                        
+                                                                               
             #if !PARALLELIZE
             }
             #endif
@@ -93,6 +93,15 @@ namespace BBPPiCalculator
             });
             #endif
                         
+            // sort the results - if parallization is enabled the results are out of order
+            // if these results were to be stored in an eventually consistent database such as MongoDB
+            // then we woudln't need to sort it in the application.
+            PiDigits.Sort(new BBPResultComparer());
+            foreach (BBPResult br in PiDigits)
+            {
+                Console.Write(br.HexDigits + " " + (br.Digit) + "\r\n");
+            }
+
             // Display some statistics 
             TimeSpan span = DateTime.UtcNow - startTime;
             Console.WriteLine("\r\n\r\nTask finished in {0} seconds.", span.TotalSeconds);
