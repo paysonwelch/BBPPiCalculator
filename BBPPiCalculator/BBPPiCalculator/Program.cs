@@ -75,7 +75,7 @@ namespace BBPPiCalculator
             #region Vars
             DateTime startTime = DateTime.UtcNow;                 // track the start time          
             int digitStart = 0;                                   // start digit
-            int digitEnd = 1000000;                               // end digit
+            int digitEnd = 10000;                                 // end digit
             List<BBPResult> PiDigits = new List<BBPResult>();     // collection of results
             #endregion
 
@@ -100,10 +100,10 @@ namespace BBPPiCalculator
             // if these results were to be stored in an eventually consistent database such as MongoDB
             // then we woudln't need to sort it in the application.
             PiDigits.Sort(new BBPResultComparer());
-            /*foreach (BBPResult br in PiDigits)
+            foreach (BBPResult br in PiDigits)
             {
                 Console.Write(br.HexDigits + " " + (br.Digit) + "\r\n");
-            }*/
+            }
 
             // Display some statistics 
             TimeSpan span = DateTime.UtcNow - startTime;
