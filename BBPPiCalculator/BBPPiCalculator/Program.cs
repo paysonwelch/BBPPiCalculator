@@ -7,25 +7,27 @@ using System.Threading.Tasks;
 /******************************************************************************
  * BBP Pi Calculator
  * 2014.12.14
- * Payson Welch; paysonwelch.com, freeideas.org
+ * Payson Welch; paysonwelch.com, freeideas.org, github.com/paysonwelch
+ * paysonwelch@gmail.com
  * 
  * Abstract
  * --------------------------
  * This application is a proof of concept to demonstrate the capability of the 
  * Bailey–Borwein–Plouffe formula which can be used to solve for [n]th binary 
- * digit of pi using base 16 math.
+ * digit in base16 of pi.
  * http://en.wikipedia.org/wiki/Bailey%E2%80%93Borwein%E2%80%93Plouffe_formula
  * 
  * Executive Summary
  * --------------------------------------------------------
  * Originally I was considering using the BBP formula to create a new Proof of
- * Work (POW) system for crypto currencies. With the advent of Proof of Stake 
+ * Work (POW) system for crypto currencies. With the advent of Proof of Stake
  * however and other anonymizing features of currencies the BBP-Pi POW system
  * would not be enough in itself to create a highly successful crypto currency.
+ * 
  * A BBP-Pi POW currency would be more of a novelty of interest to reserachers
  * mostly. There is also PrimeCoin which uses a POW system for hunting chains
  * of prime numbers. So although this is an interesting idea it needs more
- * thought before simply createing a POW based on BBP.
+ * thought before simply creating a POW based on BBP.
  * 
  * This applicaiton has been structured in such a way that it could easily be
  * modified for grid computing. This application currently will not focus on 
@@ -36,28 +38,37 @@ using System.Threading.Tasks;
  *  
  * Bailey–Borwein–Plouffe 
  * --------------------------------------------------------
- * The BBP formula was accidentally discovered in 1995 by researchers. It is a 
- * spigot algorithm which can be used to calculate any digit of Pi.
+ * The BBP formula was accidentally discovered in 1995 but it changed the 
+ * landscape of our understanding of how to calculate certain numbers such
+ * as Pi and e. It uses a series of summations to calculate a hexidecimal 
+ * stream of the floating point portion of Pi.
  * 
  * Compatibility and Crypto Currency Considerations
  * --------------------------------------------------------
- * This proof of concept will not take into account large numbers. As the 
- * dataset grows the max number we wil be able to use in the calculations is
- * 18,446,744,073,709,551,615 which is the value of an unsigned int64. For 
- * crypto currencies it would be possible to use the GNU bignum library.
+ * This applicaiton is not compatible with large numbers, so be cautious about
+ * overflow.
  * 
  * The GMP library has interesting number generators which could also be 
  * introduced for POW systems.
  * https://gmplib.org/pi-with-gmp.html
+ * 
+ * References: 
+ * BBP Algorith for Pi, The (Whitepaper) http://crd-legacy.lbl.gov/~dhbailey/dhbpapers/bbp-alg.pdf
+ * Pi in hexidecimal: http://calccrypto.wikidot.com/math:pi-hex
+ * 
  * ***************************************************************************/
 
 namespace BBPPiCalculator
 {
-    class Program
+    public class Program
     {
         static void Main(string[] args)
         {
-            
-        }
+            BBPCalculator bc = new BBPCalculator();
+            string hd = bc.Calc(0);
+            Console.WriteLine(hd);
+
+            return;
+        }     
     }
 }
