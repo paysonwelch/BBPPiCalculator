@@ -32,7 +32,7 @@ using BBP;
  * 
  * This applicaiton has been structured in such a way that it could easily be
  * modified for grid computing. This application currently will not focus on 
- * grid payload distribution however, but will focus on breaking work items
+ * grid payload distribution, but will focus on breaking work items
  * into small specific units which can be easily inserted into a grid pipeline
  * in the future.
  * http://en.wikipedia.org/wiki/Primecoin
@@ -60,6 +60,10 @@ using BBP;
  * Parallelization, Test system: 2x Xeon E5520 CPUs, 24GB RAM
  * - Un-Parallelized runtime for 1000 slices (10000 digits) is 11.5 seconds.
  * - Parallelized runtime, 1.25 seconds for 1000 slices
+ * 
+ * Closing thought - The BBP algorithm is a prime candidate for conversion to 
+ * C++ in order to use Accelerated Massive Parallelism (AMP) to facilitate 
+ * GPU calculation.
  * ***************************************************************************/
 
 namespace BBPPiCalculator
@@ -71,7 +75,7 @@ namespace BBPPiCalculator
             #region Vars
             DateTime startTime = DateTime.UtcNow;                 // track the start time          
             int digitStart = 0;                                   // start digit
-            int digitEnd = 10000;                                 // end digit
+            int digitEnd = 1000000;                               // end digit
             List<BBPResult> PiDigits = new List<BBPResult>();     // collection of results
             #endregion
 
@@ -97,10 +101,10 @@ namespace BBPPiCalculator
             // if these results were to be stored in an eventually consistent database such as MongoDB
             // then we woudln't need to sort it in the application.
             PiDigits.Sort(new BBPResultComparer());
-            foreach (BBPResult br in PiDigits)
+            /*foreach (BBPResult br in PiDigits)
             {
                 Console.Write(br.HexDigits + " " + (br.Digit) + "\r\n");
-            }
+            }*/
 
             // Display some statistics 
             TimeSpan span = DateTime.UtcNow - startTime;
