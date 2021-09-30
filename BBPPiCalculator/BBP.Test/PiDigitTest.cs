@@ -1,9 +1,12 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using BBP;
-
-namespace BBP.Test
+﻿namespace BBP.Test
 {
+    using System;
+    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using BBP;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using System.Collections.Generic;
+
     /// <summary>
     /// The unit testing is necessary since there is lots of parallelization happening.
     /// During the optimization process we want to ensure that the data matches what
@@ -120,6 +123,42 @@ namespace BBP.Test
             PiDigit pd = new PiDigit();
             BBPResult result = pd.Calc(90);
             Assert.AreEqual(result.HexDigits, "E90C6CC0AC");
+        }
+
+        [DataTestMethod]
+        [DataRow(0, 40, "243F6A8885A308D313198A2E03707344A4093822")]
+        [DataRow(1, 38, "43F6A8885A308D313198A2E03707344A409382")]
+        [DataRow(10, 30, "A308D313198A2E03707344A4093822")]
+        public void PiBytes(int n, int count, string expected)
+        {
+            PiDigit pd = new PiDigit();
+            var result = new string(pd
+                .PiBytes(
+                    n: n,
+                    count: count)
+                .Select(c => (char)c)
+                .ToArray());
+            Assert.AreEqual(expected: expected, actual: result);
+        }
+
+        [DataTestMethod]
+        [DataRow(0, 40, "243F6A8885A308D313198A2E03707344A4093822")]
+        [DataRow(1, 38, "43F6A8885A308D313198A2E03707344A409382")]
+        [DataRow(10, 30, "A308D313198A2E03707344A4093822")]
+        public async Task PiBytesAsync(int n, int count, string expected)
+        {
+            PiDigit pd = new PiDigit();
+            List<char> accumulator = new List<char>();
+            await foreach(var c in pd
+                .PiBytesAsync(
+                    n: n,
+                    count: count))
+            {
+                accumulator.Add(c);
+            }
+
+            var result = new string(accumulator.ToArray());
+            Assert.AreEqual(expected: expected, actual: result);
         }
     }
 }

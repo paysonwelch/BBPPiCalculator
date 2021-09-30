@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace BBP
+﻿namespace BBP
 {
     /// <summary>
     /// Underlying interface for BBP algos which will allow us to use C# generics 
@@ -16,6 +10,6 @@ namespace BBP
     /// </summary>
     interface IBBPCalculator
     {
-        BBPResult Calc(int n);
+        BBPResult Calc(long n);
     }
 }

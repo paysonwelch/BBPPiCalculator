@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Text;
 
 namespace BBP
 {
@@ -43,10 +39,10 @@ namespace BBP
     public class PiDigit : IBBPCalculator
     {
         #region Vars
-        private const int NumHexDigits = 16;                        
-        private const double Epsilon = 1e-17;                        
-        private const int NumTwoPowers = 25;                         
-        private double[] twoPowers = new double[NumTwoPowers];       
+        private const int NumHexDigits = 16;
+        private const double Epsilon = 1e-17;
+        private const int NumTwoPowers = 25;
+        private double[] twoPowers = new double[NumTwoPowers];
         #endregion
 
         /// <summary>
@@ -57,12 +53,55 @@ namespace BBP
             this.initializeTwoPowers();
         }
 
+
+        public async IAsyncEnumerable<char> PiBytesAsync(int n, int count = 10)
+        {
+            int offset = 0;
+            int remaining = count;
+
+            while (remaining > 0)
+            {
+                var result = this.Calc(n + offset);
+                offset += result.HexDigits.Length;
+                for (int i = 0; i < result.HexDigits.Length; i++)
+                {
+                    remaining--;
+                    yield return result.HexDigits[i];
+                    if (remaining == 0)
+                    {
+                        yield break;
+                    }
+                }
+            }
+        }
+
+        public IEnumerable<char> PiBytes(int n, int count = 10)
+        {
+            int offset = 0;
+            int remaining = count;
+
+            while (remaining > 0)
+            {
+                var result = this.Calc(n + offset);
+                offset += result.HexDigits.Length;
+                for (int i = 0; i < result.HexDigits.Length; i++)
+                {
+                    remaining--;
+                    yield return result.HexDigits[i];
+                    if (remaining == 0)
+                    {
+                        yield break;
+                    }
+                }
+            }
+        }
+
         /// <summary>
         /// Calculates the [n]th hexidecimal digit of Pi.
         /// </summary>
         /// <param name="n">The digit of Pi which you wish to solve for.</param>
         /// <returns>Returns ten hexidecimal values of Pi from the offset (n).</returns>
-        public BBPResult Calc(int n)
+        public BBPResult Calc(long n)
         {
             double pid, s1, s2, s3, s4;     // summations           
             string hexDigits;               // the hexidecimal digits
@@ -72,9 +111,9 @@ namespace BBP
             s2 = Series(4, n);
             s3 = Series(5, n);
             s4 = Series(6, n);
-            
+
             pid = 4d * s1 - 2d * s2 - s3 - s4;          // transform the summations
-            pid = pid - (int)pid + 1d;                  // create the fraction
+            pid = pid - (long)pid + 1d;                  // create the fraction
             hexDigits = HexString(pid, NumHexDigits);   // convert the fraction to the hex digit slice      
 
             return new BBPResult() { Digit = n, HexDigits = hexDigits.Substring(0, 10) };
@@ -85,8 +124,8 @@ namespace BBP
         /// </summary>
         private void initializeTwoPowers()
         {
-            this.twoPowers[0] = 1d;         
-            Parallel.For(1, NumTwoPowers, i =>           
+            this.twoPowers[0] = 1d;
+            Parallel.For(1, NumTwoPowers, i =>
             {
                 this.twoPowers[i] = 2d * this.twoPowers[i - 1];
             });
@@ -105,14 +144,14 @@ namespace BBP
             string hexChars = "0123456789ABCDEF";
             StringBuilder sb = new StringBuilder(numDigits);
             double y = Math.Abs(x);
-            for (int i = 0; i < numDigits; i++)            
+            for (int i = 0; i < numDigits; i++)
             {
                 y = 16d * (y - Math.Floor(y));
                 sb.Append(hexChars[(int)y]);
             }
             return sb.ToString();
         }
-               
+
         /// <summary>
         /// This routine evaluates the series  sum_k 16^(n-k)/(8*k+m)
         /// using the modular exponentiation technique.
@@ -120,22 +159,22 @@ namespace BBP
         /// <param name="m"></param>
         /// <param name="n"></param>
         /// <returns></returns>
-        private double Series(int m, int n)
+        private double Series(long m, long n)
         {
             double denom, pow, sum = 0d, term;
 
             // Sum the series up to n.              
-            for(int k=0; k<n;k++)
+            for (long k = 0; k < n; k++)
             {
                 denom = 8 * k + m;
                 pow = n - k;
                 term = ModPow16(pow, denom);
                 sum = sum + term / denom;
-                sum = sum - (int)sum;
+                sum = sum - (long)sum;
             }
 
             //  Compute a few terms where k &gt;= n.
-            for (int k = n; k <= n + 100; k++)
+            for (long k = n; k <= n + 100; k++)
             {
                 denom = 8 * k + m;
                 term = Math.Pow(16d, (double)(n - k)) / denom;
@@ -144,7 +183,7 @@ namespace BBP
                     break;
                 }
                 sum = sum + term;
-                sum = sum - (int)sum;
+                sum = sum - (long)sum;
             }
 
             return sum;
@@ -158,7 +197,7 @@ namespace BBP
         /// <returns></returns>
         private double ModPow16(double p, double m)
         {
-            int i;
+            long i;
             double pow1, pow2, result;
             if (m == 1d)
             {
@@ -166,7 +205,7 @@ namespace BBP
             }
 
             // Find the greatest power of two less than or equal to p.
-            for (i = 0; i < NumTwoPowers; i++)                    
+            for (i = 0; i < NumTwoPowers; i++)
             {
                 if (twoPowers[i] > p)
                 {
@@ -178,19 +217,19 @@ namespace BBP
             result = 1d;
 
             // Perform binary exponentiation algorithm modulo m.                 
-            for (int j = 1; j <= i; j++)
+            for (long j = 1; j <= i; j++)
             {
                 if (pow1 >= pow2)
                 {
                     result = 16d * result;
-                    result = result - (int)(result / m) * m;
+                    result = result - (long)(result / m) * m;
                     pow1 = pow1 - pow2;
                 }
                 pow2 = 0.5 * pow2;
                 if (pow2 >= 1d)
                 {
                     result = result * result;
-                    result = result - (int)(result / m) * m;
+                    result = result - (long)(result / m) * m;
                 }
             }
 
