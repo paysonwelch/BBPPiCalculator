@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using BBP;
+﻿using BBP;
 
 /******************************************************************************
  * BBP Pi Calculator
@@ -79,30 +74,30 @@ namespace BBPPiCalculator
             List<BBPResult> PiDigits = new List<BBPResult>();     // collection of results
             #endregion
 
-            #if !PARALLELIZE                                      // parallelization is disabled
-            for (int i = digitStart; i < digitEnd/10; i++)        // to turn on set the PARALLELIZE conditional compilation symbol
-            #endif
-            #if PARALLELIZE                                       // parallelization is turned on
+#if !PARALLELIZE                                      // parallelization is disabled
+            for (int i = digitStart; i < digitEnd / 10; i++)        // to turn on set the PARALLELIZE conditional compilation symbol
+#endif
+#if PARALLELIZE                                       // parallelization is turned on
             Parallel.For(digitStart, digitEnd / 10, i =>
-            #endif
+#endif
             {
                 PiDigit pd = new PiDigit();                       // generate the next slice of 10 
                 BBPResult result = pd.Calc(i * 10);               // store the result so we can sort it later (eventually consistent)                              
                 PiDigits.Add(result);                             // the list is used in case we are using parallelization which will process slices out of order                                                                                                                       
-            #if !PARALLELIZE
+#if !PARALLELIZE
             }
-            #endif
-            #if PARALLELIZE
+#endif
+#if PARALLELIZE
             });
-            #endif
-                        
+#endif
+
             // sort the results - if parallelization is enabled the results are out of order
             // if these results were to be stored in an eventually consistent database such as MongoDB
             // then we wouldn't need to sort it in the application.
             PiDigits.Sort(new BBPResultComparer());
             foreach (BBPResult br in PiDigits)
             {
-                 Console.Write("{0} {1}\r\n", br.HexDigits, br.Digit);
+                Console.Write("{0} {1}\r\n", br.HexDigits, br.Digit);
             }
 
             // Display some statistics 
@@ -110,6 +105,6 @@ namespace BBPPiCalculator
             Console.WriteLine("\r\n\r\nTask finished in {0} seconds.", span.TotalSeconds);
 
             return;
-        }     
+        }
     }
 }
