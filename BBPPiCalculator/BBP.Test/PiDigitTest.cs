@@ -16,120 +16,33 @@
     public class PiDigitTest
     {
         /// <summary>
-        /// Match the hex stream chars 0-9
+        /// Match the hex stream chars n to n+9
         /// </summary>
-        [TestMethod]
-        public void PiDigits_0()
+        [DataTestMethod]
+        [DataRow(0, "243F6A8885")]
+        [DataRow(10, "A308D31319")]
+        [DataRow(20, "8A2E037073")]
+        [DataRow(30, "44A4093822")]
+        [DataRow(40, "299F31D008")]
+        [DataRow(50, "2EFA98EC4E")]
+        [DataRow(60, "6C89452821")]
+        [DataRow(70, "E638D01377")]
+        [DataRow(80, "BE5466CF34")]
+        [DataRow(90, "E90C6CC0AC")]
+        public void TestCalc(long n, string expected)
         {
             PiDigit pd = new PiDigit();
-            BBPResult result = pd.Calc(0);
-            Assert.AreEqual(result.HexDigits, "243F6A8885");
-        }
-
-        /// <summary>
-        /// Match the hex stream chars 10-19
-        /// </summary>
-        [TestMethod]
-        public void PiDigits_10()
-        {
-            PiDigit pd = new PiDigit();
-            BBPResult result = pd.Calc(10);
-            Assert.AreEqual(result.HexDigits, "A308D31319");
-        }
-
-        /// <summary>
-        /// Match the hex stream chars 20-29
-        /// </summary>
-        [TestMethod]
-        public void PiDigits_20()
-        {
-            PiDigit pd = new PiDigit();
-            BBPResult result = pd.Calc(20);
-            Assert.AreEqual(result.HexDigits, "8A2E037073");
-        }
-
-        /// <summary>
-        /// Match the hex stream chars 30-39
-        /// </summary>
-        [TestMethod]
-        public void PiDigits_30()
-        {
-            PiDigit pd = new PiDigit();
-            BBPResult result = pd.Calc(30);
-            Assert.AreEqual(result.HexDigits, "44A4093822");
-        }
-
-        /// <summary>
-        /// Match the hex stream chars 40-49
-        /// </summary>
-        [TestMethod]
-        public void PiDigits_40()
-        {
-            PiDigit pd = new PiDigit();
-            BBPResult result = pd.Calc(40);
-            Assert.AreEqual(result.HexDigits, "299F31D008");
-        }
-
-        /// <summary>
-        /// Match the hex stream chars 50-59
-        /// </summary>
-        [TestMethod]
-        public void PiDigits_50()
-        {
-            PiDigit pd = new PiDigit();
-            BBPResult result = pd.Calc(50);
-            Assert.AreEqual(result.HexDigits, "2EFA98EC4E");
-        }
-
-        /// <summary>
-        /// Match the hex stream chars 60-69
-        /// </summary>
-        [TestMethod]
-        public void PiDigits_60()
-        {
-            PiDigit pd = new PiDigit();
-            BBPResult result = pd.Calc(60);
-            Assert.AreEqual(result.HexDigits, "6C89452821");
-        }
-
-        /// <summary>
-        /// Match the hex stream chars 70-79
-        /// </summary>
-        [TestMethod]
-        public void PiDigits_70()
-        {
-            PiDigit pd = new PiDigit();
-            BBPResult result = pd.Calc(70);
-            Assert.AreEqual(result.HexDigits, "E638D01377");
-        }
-
-        /// <summary>
-        /// Match the hex stream chars 80-89
-        /// </summary>
-        [TestMethod]
-        public void PiDigits_80()
-        {
-            PiDigit pd = new PiDigit();
-            BBPResult result = pd.Calc(80);
-            Assert.AreEqual(result.HexDigits, "BE5466CF34");
-        }
-
-        /// <summary>
-        /// Match the hex stream chars 90-99
-        /// </summary>
-        [TestMethod]
-        public void PiDigits_90()
-        {
-            PiDigit pd = new PiDigit();
-            BBPResult result = pd.Calc(90);
-            Assert.AreEqual(result.HexDigits, "E90C6CC0AC");
+            BBPResult result = pd.Calc(n: n);
+            Assert.AreEqual(
+                expected: expected,
+                actual: result.HexDigits);
         }
 
         [DataTestMethod]
         [DataRow(0, 40, "243F6A8885A308D313198A2E03707344A4093822")]
         [DataRow(1, 38, "43F6A8885A308D313198A2E03707344A409382")]
         [DataRow(10, 30, "A308D313198A2E03707344A4093822")]
-        public void PiBytes(int n, int count, string expected)
+        public void TestPiBytes(long n, int count, string expected)
         {
             PiDigit pd = new PiDigit();
             var result = new string(pd
@@ -145,7 +58,7 @@
         [DataRow(0, 40, "243F6A8885A308D313198A2E03707344A4093822")]
         [DataRow(1, 38, "43F6A8885A308D313198A2E03707344A409382")]
         [DataRow(10, 30, "A308D313198A2E03707344A4093822")]
-        public async Task PiBytesAsync(int n, int count, string expected)
+        public async Task TestPiBytesAsync(long n, int count, string expected)
         {
             PiDigit pd = new PiDigit();
             List<char> accumulator = new List<char>();
@@ -159,6 +72,45 @@
 
             var result = new string(accumulator.ToArray());
             Assert.AreEqual(expected: expected, actual: result);
+        }
+
+        [TestMethod]
+        public async Task TestRepeatCalls()
+        {
+            PiDigit pd = new PiDigit();
+            // first digit + 9
+            Assert.AreEqual(
+                expected: "243F6A8885",
+                actual: pd.Calc(n: 0).HexDigits);
+            // second digit + 9
+            Assert.AreEqual(
+                expected: "43F6A8885A",
+                actual: pd.Calc(n: 1).HexDigits);
+
+            // 10th digit + 9
+            Assert.AreEqual(
+                expected: "A308D31319",
+                actual: pd.Calc(n: 10).HexDigits);
+            // 11th digits + 9
+            Assert.AreEqual(
+                expected: "308D313198",
+                actual: pd.Calc(n: 11).HexDigits);
+            // 12th digits + 8
+            Assert.AreEqual(
+                expected: "08D313198",
+                actual: new string(pd.PiBytes(n: 12, count: 9).ToArray()));
+
+            // 20th digit + 9
+            List<char> accumulator = new List<char>();
+            await foreach (var c in pd
+                .PiBytesAsync(
+                    n: 20,
+                    count: 10))
+            {
+                accumulator.Add(c);
+            }
+            var result = new string(accumulator.ToArray());
+            Assert.AreEqual(expected: "8A2E037073", actual: result);
         }
     }
 }

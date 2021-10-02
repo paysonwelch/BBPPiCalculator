@@ -54,9 +54,9 @@ namespace BBP
         }
 
 
-        public async IAsyncEnumerable<char> PiBytesAsync(int n, int count = 10)
+        public async IAsyncEnumerable<char> PiBytesAsync(long n, int count = 10)
         {
-            int offset = 0;
+            long offset = 0;
             int remaining = count;
 
             while (remaining > 0)
@@ -75,9 +75,9 @@ namespace BBP
             }
         }
 
-        public IEnumerable<char> PiBytes(int n, int count = 10)
+        public IEnumerable<char> PiBytes(long n, int count = 10)
         {
-            int offset = 0;
+            long offset = 0;
             int remaining = count;
 
             while (remaining > 0)
