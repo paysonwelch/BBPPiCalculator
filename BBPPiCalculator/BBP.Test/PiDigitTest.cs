@@ -31,11 +31,31 @@
         [DataRow(90, "E90C6CC0AC")]
         public void TestCalc(long n, string expected)
         {
-            PiDigit pd = new PiDigit();
+            PiDigit pd = new PiDigit(nOffset: 0);
             BBPResult result = pd.Calc(n: n);
             Assert.AreEqual(
                 expected: expected,
                 actual: result.HexDigits);
+
+            // test separate instance with same nethod
+            PiDigit pd2 = new PiDigit(nOffset: 0);
+            BBPResult result2 = pd2.Calc(n: n);
+            Assert.AreEqual(
+                expected: expected,
+                actual: result.HexDigits);
+
+            // test separate instance with alternate method
+            PiDigit pd3 = new PiDigit(nOffset: n);
+            BBPResult result3 = pd3.Next();
+            Assert.AreEqual(
+                expected: expected,
+                actual: result.HexDigits);
+
+            // test separate instance with alternate, static method
+            BBPResult result4 = PiDigit.Calculate(n: n);
+            Assert.AreEqual(
+                expected: expected,
+                actual: result4.HexDigits);
         }
 
         [DataTestMethod]
@@ -81,11 +101,11 @@
             // first digit + 9
             Assert.AreEqual(
                 expected: "243F6A8885",
-                actual: pd.Calc(n: 0).HexDigits);
+                actual: pd.Next().HexDigits);
             // second digit + 9
             Assert.AreEqual(
                 expected: "43F6A8885A",
-                actual: pd.Calc(n: 1).HexDigits);
+                actual: pd.Next().HexDigits);
 
             // 10th digit + 9
             Assert.AreEqual(
@@ -94,23 +114,23 @@
             // 11th digits + 9
             Assert.AreEqual(
                 expected: "308D313198",
-                actual: pd.Calc(n: 11).HexDigits);
+                actual: pd.Next().HexDigits);
             // 12th digits + 8
             Assert.AreEqual(
                 expected: "08D313198",
                 actual: new string(pd.PiBytes(n: 12, count: 9).ToArray()));
 
-            // 20th digit + 9
+            // 30th digit + 9
             List<char> accumulator = new List<char>();
             await foreach (var c in pd
                 .PiBytesAsync(
-                    n: 20,
+                    n: -1,
                     count: 10))
             {
                 accumulator.Add(c);
             }
             var result = new string(accumulator.ToArray());
-            Assert.AreEqual(expected: "8A2E037073", actual: result);
+            Assert.AreEqual(expected: "4A40938222", actual: result);
         }
     }
 }

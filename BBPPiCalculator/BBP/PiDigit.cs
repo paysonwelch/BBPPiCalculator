@@ -42,32 +42,55 @@ namespace BBP
         private const int NumHexDigits = 16;
         private const double Epsilon = 1e-17;
         private const int NumTwoPowers = 25;
-        private double[] twoPowers = new double[NumTwoPowers];
+        private static readonly double[] TwoPowers;
+        private long nOffset = 0;
         #endregion
+
+        static PiDigit()
+        {
+            // Pre-calculate a power of two table to be used in our calculations.
+            var twoPowers = new double[NumTwoPowers];
+            twoPowers[0] = 1d;
+            Parallel.For(1, NumTwoPowers, i =>
+            {
+                twoPowers[i] = 2d * twoPowers[i - 1];
+            });
+            TwoPowers = twoPowers;
+        }
 
         /// <summary>
         /// Constructor
         /// </summary>
-        public PiDigit()
+        public PiDigit(long nOffset = 0)
         {
-            this.initializeTwoPowers();
+            if (nOffset < 0)
+            {
+                throw new ArgumentException(nameof(nOffset));
+            }
+            this.nOffset = nOffset;
         }
 
-
-        public async IAsyncEnumerable<char> PiBytesAsync(long n, int count = 10)
+        public async IAsyncEnumerable<char> PiBytesAsync(long n = -1, int count = 10)
         {
+            if (n == -1)
+            {
+                n = this.nOffset;
+            } else
+            {
+                this.nOffset = n;
+            }
             long offset = 0;
             int remaining = count;
 
             while (remaining > 0)
             {
-                var result = this.Calc(n + offset);
+                var result = Calculate(n + offset);
                 offset += result.HexDigits.Length;
                 for (int i = 0; i < result.HexDigits.Length; i++)
                 {
-                    remaining--;
+                    this.nOffset = n + offset + i + 1;
                     yield return result.HexDigits[i];
-                    if (remaining == 0)
+                    if (remaining-- == 0)
                     {
                         yield break;
                     }
@@ -75,20 +98,28 @@ namespace BBP
             }
         }
 
-        public IEnumerable<char> PiBytes(long n, int count = 10)
+        public IEnumerable<char> PiBytes(long n = -1, int count = 10)
         {
+            if (n == -1)
+            {
+                n = this.nOffset;
+            } else
+            {
+                this.nOffset = n;
+            }
+
             long offset = 0;
             int remaining = count;
 
             while (remaining > 0)
             {
-                var result = this.Calc(n + offset);
+                var result = PiDigit.Calculate(n + offset);
                 offset += result.HexDigits.Length;
                 for (int i = 0; i < result.HexDigits.Length; i++)
                 {
-                    remaining--;
+                    this.nOffset = n + offset + i + 1;
                     yield return result.HexDigits[i];
-                    if (remaining == 0)
+                    if (remaining-- == 0)
                     {
                         yield break;
                     }
@@ -101,8 +132,13 @@ namespace BBP
         /// </summary>
         /// <param name="n">The digit of Pi which you wish to solve for.</param>
         /// <returns>Returns ten hexidecimal values of Pi from the offset (n).</returns>
-        public BBPResult Calc(long n)
+        public static BBPResult Calculate(long n)
         {
+            if (n < 0)
+            {
+                throw new ArgumentException(nameof(n));
+            }
+
             double pid, s1, s2, s3, s4;     // summations           
             string hexDigits;               // the hexidecimal digits
 
@@ -120,16 +156,18 @@ namespace BBP
         }
 
         /// <summary>
-        /// Pre-calculate a power of two table to be used in our calculations.
+        /// Calculates the [n]th hexidecimal digit of Pi.
         /// </summary>
-        private void initializeTwoPowers()
+        /// <param name="n">The digit of Pi which you wish to solve for.</param>
+        /// <returns>Returns ten hexidecimal values of Pi from the offset (n).</returns>
+        public BBPResult Calc(long n)
         {
-            this.twoPowers[0] = 1d;
-            Parallel.For(1, NumTwoPowers, i =>
-            {
-                this.twoPowers[i] = 2d * this.twoPowers[i - 1];
-            });
+            this.nOffset = n + 1;
+            return PiDigit.Calculate(n: n);
         }
+
+        public BBPResult Next() =>
+            this.Calc(this.nOffset);
 
         /// <summary>
         /// Converts the fraction to a hexidecimal string. Multiply by 16
@@ -139,7 +177,7 @@ namespace BBP
         /// <param name="x">The fraction of the summations.</param>
         /// <param name="numDigits">Number of digits to render to hex.</param>
         /// <returns>Returns a hex string of length numDigits</returns>
-        private string HexString(double x, int numDigits)
+        private static string HexString(double x, int numDigits)
         {
             string hexChars = "0123456789ABCDEF";
             StringBuilder sb = new StringBuilder(numDigits);
@@ -159,7 +197,7 @@ namespace BBP
         /// <param name="m"></param>
         /// <param name="n"></param>
         /// <returns></returns>
-        private double Series(long m, long n)
+        private static double Series(long m, long n)
         {
             double denom, pow, sum = 0d, term;
 
@@ -195,7 +233,7 @@ namespace BBP
         /// <param name="p"></param>
         /// <param name="m"></param>
         /// <returns></returns>
-        private double ModPow16(double p, double m)
+        private static double ModPow16(double p, double m)
         {
             long i;
             double pow1, pow2, result;
@@ -207,12 +245,12 @@ namespace BBP
             // Find the greatest power of two less than or equal to p.
             for (i = 0; i < NumTwoPowers; i++)
             {
-                if (twoPowers[i] > p)
+                if (TwoPowers[i] > p)
                 {
                     break;
                 }
             }
-            pow2 = twoPowers[i - 1];
+            pow2 = TwoPowers[i - 1];
             pow1 = p;
             result = 1d;
 
