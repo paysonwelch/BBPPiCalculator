@@ -4,6 +4,17 @@ BBP Pi Calculator
 Preliminary C#.NET project to generate the numbers of pi using the BBP formula which is grid computing friendly.
 
 BBP Pi Calculator
+
+Updated in 2021:
+- Extended to include digit generator, tests simplified and expanded.
+- Dotnet 6
+- currently VS2022/Rider EAP required.
+- 'miner' branch has further additions with a FasterKV based miner, including a Pi byte buffer and a worker/miner for filling the Pi FasterKV
+
+2021.10.02
+Jessica Mulein; jessicamulein.com, github.com/JessicaMulein
+
+Originally by:
 2014.12.14
 Payson Welch; paysonwelch.com, freeideas.org, github.com/paysonwelch
 paysonwelch@gmail.com

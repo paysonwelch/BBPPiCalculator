@@ -1,11 +1,18 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BBPPiCalculator", "BBPPiCalculator\BBPPiCalculator.csproj", "{A21B84A2-F06F-44EC-BBE6-7990696145DF}"
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31717.71
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BBPPiCalculator", "BBPPiCalculator\BBPPiCalculator.csproj", "{A21B84A2-F06F-44EC-BBE6-7990696145DF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BBP", "BBP\BBP.csproj", "{F0C50720-2D02-40A4-B5E6-EB8BAAA0E117}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BBP", "BBP\BBP.csproj", "{F0C50720-2D02-40A4-B5E6-EB8BAAA0E117}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BBP.Test", "BBP.Test\BBP.Test.csproj", "{093B3281-36E4-4D32-82D8-404EB1447283}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BBP.Test", "BBP.Test\BBP.Test.csproj", "{093B3281-36E4-4D32-82D8-404EB1447283}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{9521386F-9574-465C-90CE-783737596906}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -28,5 +35,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {AE27164D-502D-44B3-B5B7-79AA0711FD44}
 	EndGlobalSection
 EndGlobal

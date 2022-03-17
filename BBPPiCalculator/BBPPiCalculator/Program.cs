@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using BBP;
+﻿using BBP;
 
 /******************************************************************************
  * BBP Pi Calculator
@@ -66,50 +61,49 @@ using BBP;
  * GPU calculation.
  * ***************************************************************************/
 
-namespace BBPPiCalculator
+namespace BBPPiCalculator;
+
+public class Program
 {
-    public class Program
+    private static void Main(string[] args)
     {
-        static void Main(string[] args)
-        {
-            #region Vars
-            DateTime startTime = DateTime.UtcNow;                 // track the start time          
-            int digitStart = 0;                                   // start digit
-            int digitEnd = 10000;                                 // end digit
-            List<BBPResult> PiDigits = new List<BBPResult>();     // collection of results
-            #endregion
+        #region Vars
 
-            #if !PARALLELIZE                                      // parallelization is disabled
-            for (int i = digitStart; i < digitEnd/10; i++)        // to turn on set the PARALLELIZE conditional compilation symbol
-            #endif
-            #if PARALLELIZE                                       // parallelization is turned on
+        var startTime = DateTime.UtcNow; // track the start time          
+        var digitStart = 0; // start digit
+        var digitEnd = 10000; // end digit
+        var PiDigits = new List<BBPResult>(); // collection of results
+
+        #endregion
+
+#if !PARALLELIZE // parallelization is disabled
+        for (var i = digitStart; i < digitEnd / 10; i++) // to turn on set the PARALLELIZE conditional compilation symbol
+#endif
+#if PARALLELIZE // parallelization is turned on
             Parallel.For(digitStart, digitEnd / 10, i =>
-            #endif
-            {
-                PiDigit pd = new PiDigit();                       // generate the next slice of 10 
-                BBPResult result = pd.Calc(i * 10);               // store the result so we can sort it later (eventually consistent)                              
-                PiDigits.Add(result);                             // the list is used in case we are using parallelization which will process slices out of order                                                                                                                       
-            #if !PARALLELIZE
-            }
-            #endif
-            #if PARALLELIZE
+#endif
+        {
+            var result = BBPCalculator.Calculate(offsetInHexDigitChars: i *
+                                                                        10); // store the result so we can sort it later (eventually consistent)                              
+            PiDigits.Add(item: result); // the list is used in case we are using parallelization which will process slices out of order                                                                                                                       
+#if !PARALLELIZE
+        }
+#endif
+#if PARALLELIZE
             });
-            #endif
-                        
-            // sort the results - if parallelization is enabled the results are out of order
-            // if these results were to be stored in an eventually consistent database such as MongoDB
-            // then we wouldn't need to sort it in the application.
-            PiDigits.Sort(new BBPResultComparer());
-            foreach (BBPResult br in PiDigits)
-            {
-                 Console.Write("{0} {1}\r\n", br.HexDigits, br.Digit);
-            }
+#endif
 
-            // Display some statistics 
-            TimeSpan span = DateTime.UtcNow - startTime;
-            Console.WriteLine("\r\n\r\nTask finished in {0} seconds.", span.TotalSeconds);
+        // sort the results - if parallelization is enabled the results are out of order
+        // if these results were to be stored in an eventually consistent database such as MongoDB
+        // then we wouldn't need to sort it in the application.
+        PiDigits.Sort(comparer: new BBPResultComparer());
+        foreach (var br in PiDigits)
+        {
+            Console.Write(value: $"{br.HexDigits} {br.Digit}\r\n");
+        }
 
-            return;
-        }     
+        // Display some statistics 
+        var span = DateTime.UtcNow - startTime;
+        Console.WriteLine(value: $"\r\n\r\nTask finished in {span.TotalSeconds} seconds.");
     }
 }

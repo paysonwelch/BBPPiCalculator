@@ -1,125 +1,214 @@
-﻿using System;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using BBP;
 
-namespace BBP.Test
+namespace BBP.Test;
+
+/// <summary>
+///     The unit testing is necessary since there is lots of parallelization happening.
+///     During the optimization process we want to ensure that the data matches what
+///     we expect.
+/// </summary>
+[TestClass]
+public class PiDigitTest
 {
     /// <summary>
-    /// The unit testing is necessary since there is lots of parallelization happening.
-    /// During the optimization process we want to ensure that the data matches what
-    /// we expect.
+    ///     Match the hex stream chars n to n+9
     /// </summary>
-    [TestClass]
-    public class PiDigitTest
+    [DataTestMethod]
+    [DataRow(data1: 0,
+        "243F6A8885")]
+    [DataRow(data1: 10,
+        "A308D31319")]
+    [DataRow(data1: 20,
+        "8A2E037073")]
+    [DataRow(data1: 30,
+        "44A4093822")]
+    [DataRow(data1: 40,
+        "299F31D008")]
+    [DataRow(data1: 50,
+        "2EFA98EC4E")]
+    [DataRow(data1: 60,
+        "6C89452821")]
+    [DataRow(data1: 70,
+        "E638D01377")]
+    [DataRow(data1: 80,
+        "BE5466CF34")]
+    [DataRow(data1: 90,
+        "E90C6CC0AC")]
+    public void TestCalc(long n, string expected)
     {
-        /// <summary>
-        /// Match the hex stream chars 0-9
-        /// </summary>
-        [TestMethod]
-        public void PiDigits_0()
+        var result = BBPCalculator.Calculate(offsetInHexDigitChars: n);
+        Assert.AreEqual(
+            expected: expected,
+            actual: result.HexDigits);
+    }
+
+    [DataTestMethod]
+    [DataRow(data1: 0,
+        40,
+        "243F6A8885A308D313198A2E03707344A4093822")]
+    [DataRow(data1: 1,
+        38,
+        "43F6A8885A308D313198A2E03707344A409382")]
+    [DataRow(data1: 10,
+        30,
+        "A308D313198A2E03707344A4093822")]
+    [DataRow(data1: 1000000,
+        23,
+        "6C65E52CB459350050E4BB1")]
+    public void TestPiChars(long n, int count, string expected)
+    {
+        var result = new string(value: BBPCalculator
+            .PiChars(
+                n: n,
+                count: count)
+            .Select(selector: c => c)
+            .ToArray());
+        Assert.AreEqual(expected: count,
+            actual: result.Length);
+        Assert.AreEqual(expected: expected,
+            actual: result);
+    }
+
+    [DataTestMethod]
+    [DataRow(data1: 0,
+        40,
+        "243F6A8885A308D313198A2E03707344A4093822")]
+    [DataRow(data1: 1,
+        38,
+        "43F6A8885A308D313198A2E03707344A409382")]
+    [DataRow(data1: 10,
+        30,
+        "A308D313198A2E03707344A4093822")]
+    [DataRow(data1: 1000000,
+        23,
+        "6C65E52CB459350050E4BB1")]
+    public async Task TestPiCharsAsync(long n, int count, string expected)
+    {
+        var accumulator = new List<char>(capacity: count);
+        await foreach (var c in BBPCalculator
+                           .PiCharsAsync(
+                               n: n,
+                               count: count))
         {
-            PiDigit pd = new PiDigit();
-            BBPResult result = pd.Calc(0);
-            Assert.AreEqual(result.HexDigits, "243F6A8885");
+            accumulator.Add(item: c);
         }
 
-        /// <summary>
-        /// Match the hex stream chars 10-19
-        /// </summary>
-        [TestMethod]
-        public void PiDigits_10()
+        var result = new string(value: accumulator.ToArray());
+        Assert.AreEqual(expected: count,
+            actual: result.Length);
+        Assert.AreEqual(expected: expected,
+            actual: result);
+    }
+
+    [DataTestMethod]
+    [DataRow(data1: 0,
+        20,
+        new byte[]
         {
-            PiDigit pd = new PiDigit();
-            BBPResult result = pd.Calc(10);
-            Assert.AreEqual(result.HexDigits, "A308D31319");
+            0x24, 0x3F, 0x6A, 0x88, 0x85, 0xA3, 0x08, 0xD3, 0x13, 0x19, 0x8A, 0x2E, 0x03, 0x70, 0x73, 0x44, 0xA4, 0x09, 0x38, 0x22,
+        })]
+    [DataRow(data1: 1,
+        19,
+        new byte[] {0x43, 0xF6, 0xA8, 0x88, 0x5A, 0x30, 0x8D, 0x31, 0x31, 0x98, 0xA2, 0xE0, 0x37, 0x07, 0x34, 0x4A, 0x40, 0x93, 0x82})]
+    [DataRow(data1: 10,
+        15,
+        new byte[] {0xA3, 0x08, 0xD3, 0x13, 0x19, 0x8A, 0x2E, 0x03, 0x70, 0x73, 0x44, 0xA4, 0x09, 0x38, 0x22})]
+    [DataRow(data1: 1000000,
+        12,
+        new byte[] {0x6C, 0x65, 0xE5, 0x2C, 0xB4, 0x59, 0x35, 0x00, 0x50, 0xE4, 0xBB, 0x17})]
+    public void TestPiBytes(long n, int count, byte[] expected)
+    {
+        var result = BBPCalculator
+            .PiBytes(
+                offsetInHexDigitChars: n,
+                count: count)
+            .ToArray();
+        Assert.AreEqual(expected: count,
+            actual: result.Length);
+        Assert.IsTrue(condition: expected.SequenceEqual(second: result));
+    }
+
+    [DataTestMethod]
+    [DataRow(data1: 0,
+        20,
+        new byte[]
+        {
+            0x24, 0x3F, 0x6A, 0x88, 0x85, 0xA3, 0x08, 0xD3, 0x13, 0x19, 0x8A, 0x2E, 0x03, 0x70, 0x73, 0x44, 0xA4, 0x09, 0x38, 0x22,
+        })]
+    [DataRow(data1: 1,
+        19,
+        new byte[] {0x43, 0xF6, 0xA8, 0x88, 0x5A, 0x30, 0x8D, 0x31, 0x31, 0x98, 0xA2, 0xE0, 0x37, 0x07, 0x34, 0x4A, 0x40, 0x93, 0x82})]
+    [DataRow(data1: 10,
+        15,
+        new byte[] {0xA3, 0x08, 0xD3, 0x13, 0x19, 0x8A, 0x2E, 0x03, 0x70, 0x73, 0x44, 0xA4, 0x09, 0x38, 0x22})]
+    [DataRow(data1: 1000000,
+        12,
+        new byte[] {0x6C, 0x65, 0xE5, 0x2C, 0xB4, 0x59, 0x35, 0x00, 0x50, 0xE4, 0xBB, 0x17})]
+    public async Task TestPiBytesAsync(long offsetInHexDigitChars, int count, byte[] expected)
+    {
+        var accumulator = new List<byte>(capacity: count);
+        await foreach (var b in BBPCalculator
+                           .PiBytesAsync(
+                               offsetInHexDigitChars: offsetInHexDigitChars,
+                               byteCount: count))
+        {
+            accumulator.Add(item: b);
         }
 
-        /// <summary>
-        /// Match the hex stream chars 20-29
-        /// </summary>
-        [TestMethod]
-        public void PiDigits_20()
+        var result = accumulator.ToArray();
+        Assert.AreEqual(expected: count,
+            actual: result.Length);
+        Assert.IsTrue(condition: expected.SequenceEqual(second: result));
+    }
+
+    [TestMethod]
+    public async Task TestRepeatCalls()
+    {
+        var nOffset = 0;
+        // first digit + 9
+        Assert.AreEqual(
+            expected: "243F6A8885",
+            actual: (await BBPCalculator.CalculateAsync(offsetInHexDigitChars: nOffset++).ConfigureAwait(continueOnCapturedContext: false))
+            .HexDigits);
+        // second digit + 9
+        Assert.AreEqual(
+            expected: "43F6A8885A",
+            actual: (await BBPCalculator.CalculateAsync(offsetInHexDigitChars: nOffset++).ConfigureAwait(continueOnCapturedContext: false))
+            .HexDigits);
+
+        // 10th digit + 9
+        nOffset = 10;
+        Assert.AreEqual(
+            expected: "A308D31319",
+            actual: (await BBPCalculator.CalculateAsync(offsetInHexDigitChars: nOffset++).ConfigureAwait(continueOnCapturedContext: false))
+            .HexDigits);
+        // 11th digits + 9
+        Assert.AreEqual(
+            expected: "308D313198",
+            actual: (await BBPCalculator.CalculateAsync(offsetInHexDigitChars: nOffset++).ConfigureAwait(continueOnCapturedContext: false))
+            .HexDigits);
+        // 12th digits + 8
+        Assert.AreEqual(
+            expected: "08D313198",
+            actual: new string(value: BBPCalculator.PiChars(n: nOffset++,
+                count: 9).ToArray()));
+
+        // 31st digit + 9
+        nOffset = 31;
+        var accumulator = new List<char>(capacity: 10);
+        await foreach (var c in BBPCalculator
+                           .PiCharsAsync(
+                               n: nOffset++,
+                               count: 10))
         {
-            PiDigit pd = new PiDigit();
-            BBPResult result = pd.Calc(20);
-            Assert.AreEqual(result.HexDigits, "8A2E037073");
+            accumulator.Add(item: c);
         }
 
-        /// <summary>
-        /// Match the hex stream chars 30-39
-        /// </summary>
-        [TestMethod]
-        public void PiDigits_30()
-        {
-            PiDigit pd = new PiDigit();
-            BBPResult result = pd.Calc(30);
-            Assert.AreEqual(result.HexDigits, "44A4093822");
-        }
-
-        /// <summary>
-        /// Match the hex stream chars 40-49
-        /// </summary>
-        [TestMethod]
-        public void PiDigits_40()
-        {
-            PiDigit pd = new PiDigit();
-            BBPResult result = pd.Calc(40);
-            Assert.AreEqual(result.HexDigits, "299F31D008");
-        }
-
-        /// <summary>
-        /// Match the hex stream chars 50-59
-        /// </summary>
-        [TestMethod]
-        public void PiDigits_50()
-        {
-            PiDigit pd = new PiDigit();
-            BBPResult result = pd.Calc(50);
-            Assert.AreEqual(result.HexDigits, "2EFA98EC4E");
-        }
-
-        /// <summary>
-        /// Match the hex stream chars 60-69
-        /// </summary>
-        [TestMethod]
-        public void PiDigits_60()
-        {
-            PiDigit pd = new PiDigit();
-            BBPResult result = pd.Calc(60);
-            Assert.AreEqual(result.HexDigits, "6C89452821");
-        }
-
-        /// <summary>
-        /// Match the hex stream chars 70-79
-        /// </summary>
-        [TestMethod]
-        public void PiDigits_70()
-        {
-            PiDigit pd = new PiDigit();
-            BBPResult result = pd.Calc(70);
-            Assert.AreEqual(result.HexDigits, "E638D01377");
-        }
-
-        /// <summary>
-        /// Match the hex stream chars 80-89
-        /// </summary>
-        [TestMethod]
-        public void PiDigits_80()
-        {
-            PiDigit pd = new PiDigit();
-            BBPResult result = pd.Calc(80);
-            Assert.AreEqual(result.HexDigits, "BE5466CF34");
-        }
-
-        /// <summary>
-        /// Match the hex stream chars 90-99
-        /// </summary>
-        [TestMethod]
-        public void PiDigits_90()
-        {
-            PiDigit pd = new PiDigit();
-            BBPResult result = pd.Calc(90);
-            Assert.AreEqual(result.HexDigits, "E90C6CC0AC");
-        }
+        var result = new string(value: accumulator.ToArray());
+        Assert.AreEqual(expected: "4A40938222",
+            actual: result);
     }
 }
